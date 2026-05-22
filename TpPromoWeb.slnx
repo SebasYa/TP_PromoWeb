@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="dominio/dominio.csproj" Id="8be5c382-0416-4504-a92c-09c3b0577549" />
+  <Project Path="negocio/negocio.csproj" Id="5a88dd2d-d2b2-4491-a700-0841d6c74554" />
+  <Project Path="API-PromoWeb/API-PromoWeb.csproj" Id="6a5ee7e0-f6fe-454a-81f8-8237d3448257" />
+  <Project Path="WebApplication1/WebApplication1.csproj" Id="b22248b4-21de-432c-8896-c7adc0414520" />
+</Solution>
