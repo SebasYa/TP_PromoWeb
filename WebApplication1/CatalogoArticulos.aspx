@@ -37,14 +37,12 @@
     </script>
 
     <section class="catalog-header">
-
         <div class="hero-stars" aria-hidden="true">
             <span style="width:3px;height:3px;top:20%;left:8%;--dur:4s;--delay:0s;"></span>
             <span style="width:2px;height:2px;top:60%;left:80%;--dur:5s;--delay:1s;"></span>
             <span style="width:3px;height:3px;top:40%;left:30%;--dur:3.5s;--delay:0.5s;"></span>
             <span style="width:2px;height:2px;top:15%;left:65%;--dur:6s;--delay:1.8s;"></span>
         </div>
-
         <div class="container">
             <h1 class="catalog-header-title">Cat&aacute;logo de Art&iacute;culos</h1>
             <p class="catalog-header-subtitle">Explor&aacute; los productos disponibles y selecion&aacute; el tuyo.</p>
@@ -54,13 +52,11 @@
                 <asp:Label ID="lblVoucher" runat="server" />
             </div>
         </div>
-
         <div class="catalog-header-wave" aria-hidden="true">
             <svg viewBox="0 0 1440 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                 <path d="M0,20 C240,40 480,0 720,20 C960,40 1200,0 1440,20 L1440,40 L0,40 Z" fill="#f5f5f7" opacity="1"/>
             </svg>
         </div>
-
     </section>
 
     <section class="catalog-body">
@@ -73,11 +69,7 @@
                         int cardIndex = 0;
                         foreach (dominio.Articulo art in listaArticulos)
                         {
-                            // Obtener imagenes del articulo
-                            System.Collections.Generic.List<dominio.Imagen> artImages = null;
-                            if (dictImagenes != null && dictImagenes.ContainsKey(art.Id))
-                                artImages = dictImagenes[art.Id];
-
+                            System.Collections.Generic.List<dominio.Imagen> artImages = obtenerImagenes(art.Id);
                             string delay = (cardIndex * 80).ToString();
                             int imgCount = (artImages != null) ? artImages.Count : 0;
                             cardIndex++;
@@ -247,7 +239,6 @@
                 if (!dotsContainer) return;
                 var valid = wrapper.querySelectorAll('.carousel-slide:not(.img-error)');
                 var dots = dotsContainer.querySelectorAll('.card-carousel-dot');
-                var validIdx = 0;
                 for (var i = 0; i < valid.length; i++) {
                     if (dots[i]) {
                         if (valid[i].classList.contains('active')) {
@@ -334,12 +325,9 @@
                 if (thumbs) {
                     var allThumbs = thumbs.querySelectorAll('.modal-thumb');
                     for (var t = 0; t < allThumbs.length; t++) {
-                        if (t === mIdx)
-                        {
+                        if (t === mIdx) {
                             allThumbs[t].classList.add('active');
-                        }
-                        else
-                        {
+                        } else {
                             allThumbs[t].classList.remove('active');
                         }
                     }
@@ -433,7 +421,11 @@
 
                         document.getElementById('btnSeleccionar').setAttribute('data-article-id', id);
 
-                        mUrls = articleImages[id] || [];
+                        mUrls = [];
+                        var cardImages = card.querySelectorAll('.carousel-slide:not(.img-error)');
+                        for (var i = 0; i < cardImages.length; i++) {
+                            mUrls.push(cardImages[i].src);
+                        }
                         mIdx = 0;
 
                         var prevBtn = document.getElementById('modalPrev');
@@ -459,16 +451,12 @@
                 e.preventDefault();
 
                 var articleId = this.getAttribute('data-article-id');
-                console.log("Seleccionando artículo ID: " + articleId);
                 if (articleId) {
                     var hiddenInput = document.getElementById('hfArticuloId');
                     var serverBtn = document.getElementById('btnSeleccionarServer');
                     if (hiddenInput && serverBtn) {
                         hiddenInput.value = articleId;
-                        console.log("Haciendo click en el boton de servidor: " + serverBtn.id);
                         serverBtn.click();
-                    } else {
-                        console.error("No se encontraron los controles ocultos de servidor.");
                     }
                 }
             });

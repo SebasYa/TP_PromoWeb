@@ -3,8 +3,6 @@ using negocio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -13,8 +11,8 @@ namespace WebApplication1
 {
     public partial class CatalogoArticulos : System.Web.UI.Page
     {
-        public List<Articulo> listaArticulos = new List<Articulo>();
-        public Dictionary<int, List<Imagen>> dictImagenes = new Dictionary<int, List<Imagen>>();
+        public List<Articulo> listaArticulos { get; set; }
+        public List<Imagen> listaImagenes { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -30,53 +28,29 @@ namespace WebApplication1
                 ArticuloNegocio negocio = new ArticuloNegocio();
                 listaArticulos = negocio.listar();
 
-                // Cargar imagenes para cada articulo
                 ImagenNegocio imagenNegocio = new ImagenNegocio();
-                foreach (Articulo art in listaArticulos)
-                {
-                    try
-                    {
-                        List<Imagen> imagenes = imagenNegocio.listar(art.Id);
-                        dictImagenes[art.Id] = imagenes;
-                    }
-                    catch
-                    {
-                        dictImagenes[art.Id] = new List<Imagen>();
-                    }
-                }
+                listaImagenes = imagenNegocio.listar();
             }
             catch (Exception ex)
             {
-                throw ex;
+                Session["error"] = ex.ToString();
             }
-
-            string jsonScript = "var articleImages = " + GetImagenesJson() + ";";
-            ClientScript.RegisterStartupScript(this.GetType(), "articleImagesJson", jsonScript, true);
         }
 
-        /// <summary>
-        /// Serializa el diccionario de imagenes a JSON para uso en JavaScript.
-        /// </summary>
-        public string GetImagenesJson()
+        public List<Imagen> obtenerImagenes(int idArticulo)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("{");
-            bool first = true;
-            foreach (var kvp in dictImagenes)
+            List<Imagen> filtradas = new List<Imagen>();
+            if (listaImagenes != null)
             {
-                if (!first) sb.Append(",");
-                first = false;
-                sb.Append("\"").Append(kvp.Key).Append("\":[");
-                for (int i = 0; i < kvp.Value.Count; i++)
+                foreach (var img in listaImagenes)
                 {
-                    if (i > 0) sb.Append(",");
-                    string url = (kvp.Value[i].ImagenUrl ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"");
-                    sb.Append("\"").Append(url).Append("\"");
+                    if (img.IdArticulo == idArticulo)
+                    {
+                        filtradas.Add(img);
+                    }
                 }
-                sb.Append("]");
             }
-            sb.Append("}");
-            return sb.ToString();
+            return filtradas;
         }
 
         protected void btnSeleccionar_Click(object sender, EventArgs e)
